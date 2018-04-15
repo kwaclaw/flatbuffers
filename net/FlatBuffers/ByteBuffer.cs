@@ -33,7 +33,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace FlatBuffers
+namespace Google.FlatBuffers
 {
     /// <summary>
     /// Class to mimic Java's ByteBuffer which is used heavily in Flatbuffers.

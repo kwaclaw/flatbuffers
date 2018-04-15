@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.1</TargetFramework>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <Copyright>Copyright (c) 2015 Google Inc</Copyright>
+    <Product>FlatBuffers</Product>
+    <Title>FlatBuffers</Title>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)'=='AnyCPU'">
+    <DefineConstants>UNSAFE_BYTEBUFFER</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+</Project>

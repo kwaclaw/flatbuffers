@@ -12,10 +12,12 @@
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/kwaclaw/flatbuffers</PackageProjectUrl>
     <PackageId>KdSoft.FlatBuffers</PackageId>
-    <PackageVersion>1.9.0</PackageVersion>
+    <PackageVersion>1.9.1</PackageVersion>
     <PackageReleaseNotes>
       .NET/C# code of FlatBuffers 1.9 packaged for Nuget ("net" subdirectory).
-      Namespace has been changed to Google.FlatBuffers, "Unsafe" optimizations have been turned on.
+      "Unsafe" optimizations have been turned on.
+      Namespace has been changed to Google.FlatBuffers, therefore rquires use of the
+      included flatc.exe generator (see tools directory in package).
     </PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -24,5 +26,9 @@
     <DefineConstants>UNSAFE_BYTEBUFFER</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="nuget-content\flatc.exe" Pack="true" PackagePath="tools" />
+  </ItemGroup>
 
 </Project>

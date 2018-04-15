@@ -9,6 +9,17 @@
     <Title>Google.FlatBuffers</Title>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/kwaclaw/flatbuffers</PackageProjectUrl>
+    <PackageId>KdSoft.FlatBuffers</PackageId>
+    <PackageVersion>1.9.0</PackageVersion>
+    <PackageReleaseNotes>
+      .NET/C# code of FlatBuffers 1.9 packaged for Nuget ("net" subdirectory).
+      Namespace has been changed to Google.FlatBuffers, "Unsafe" optimizations have been turned on.
+    </PackageReleaseNotes>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Platform)'=='AnyCPU'">
     <DefineConstants>UNSAFE_BYTEBUFFER</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

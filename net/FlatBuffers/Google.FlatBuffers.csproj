@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.1</TargetFramework>
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <TargetFrameworks>netstandard1.1;net35</TargetFrameworks>
+    <VersionPrefix>1.9.0</VersionPrefix>
     <Copyright>Copyright (c) 2015 Google Inc</Copyright>
-    <Product>FlatBuffers</Product>
-    <Title>FlatBuffers</Title>
+    <Authors>Google Inc.</Authors>
+    <Product>Google.FlatBuffers</Product>
+    <Title>Google.FlatBuffers</Title>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Platform)'=='AnyCPU'">

@@ -35,6 +35,8 @@ For any schema input files, one or more generators can be specified:
 
 -   `--grpc`: Generate RPC stub code for GRPC.
 
+-   `--dart`: Generate Dart code.
+
 For any data input files:
 
 -   `--binary`, `-b` : If data is contained in this file, generate a
@@ -99,6 +101,10 @@ Additional options:
     instead of Node.js style exporting.  Needed for compatibility with the
     Google closure compiler (useful for JS).
 
+-   `--es6-js-export` : Generates ECMAScript v6 style export definitions
+    instead of Node.js style exporting. Useful when integrating flatbuffers
+    with modern Javascript projects.
+
 -   `--raw-binary` : Allow binaries without a file_indentifier to be read.
     This may crash flatc given a mismatched schema.
 
@@ -127,6 +133,8 @@ Additional options:
 
 -   `--reflect-types` : Add minimal type reflection to code generation.
 -   `--reflect-names` : Add minimal type/name reflection.
+
+-   `--root-type T` : Select or override the default root_type.
 
 NOTE: short-form options for generators are deprecated, use the long form
 whenever possible.

@@ -131,7 +131,7 @@ const LanguageParameters &GetLangParams(IDLOptions::Language lang) {
   if (lang == IDLOptions::kJava) {
     return language_parameters[0];
   } else {
-    assert(lang == IDLOptions::kCSharp);
+    FLATBUFFERS_ASSERT(lang == IDLOptions::kCSharp);
     return language_parameters[1];
   }
 }
@@ -274,7 +274,7 @@ class GeneralGenerator : public BaseGenerator {
     if (lang_.language == IDLOptions::kJava) {
       return java_typename[type.base_type];
     } else {
-      assert(lang_.language == IDLOptions::kCSharp);
+      FLATBUFFERS_ASSERT(lang_.language == IDLOptions::kCSharp);
       return csharp_typename[type.base_type];
     }
   }
@@ -853,7 +853,8 @@ class GeneralGenerator : public BaseGenerator {
           (field.value.type.base_type == BASE_TYPE_STRUCT ||
            field.value.type.base_type == BASE_TYPE_UNION ||
            (field.value.type.base_type == BASE_TYPE_VECTOR &&
-            field.value.type.element == BASE_TYPE_STRUCT))) {
+            (field.value.type.element == BASE_TYPE_STRUCT ||
+             field.value.type.element == BASE_TYPE_UNION)))) {
         optional = lang_.optional_suffix;
         conditional_cast = "(" + type_name_dest + optional + ")";
       }
@@ -861,7 +862,7 @@ class GeneralGenerator : public BaseGenerator {
       std::string dest_cast = DestinationCast(field.value.type);
       std::string src_cast = SourceCast(field.value.type);
       std::string method_start = "  public " +
-                                 GenNullableAnnotation(field.value.type) +
+                                 (field.required ? "" : GenNullableAnnotation(field.value.type)) +
                                  type_name_dest + optional + " " +
                                  MakeCamel(field.name, lang_.first_camel_upper);
       std::string obj = lang_.language == IDLOptions::kCSharp
@@ -891,7 +892,9 @@ class GeneralGenerator : public BaseGenerator {
           code += MakeCamel(field.name, lang_.first_camel_upper);
           code += "(new " + type_name + "(), j); }\n";
         }
-      } else if (field.value.type.base_type == BASE_TYPE_UNION) {
+      } else if (field.value.type.base_type == BASE_TYPE_UNION ||
+          (field.value.type.base_type == BASE_TYPE_VECTOR &&
+           field.value.type.VectorType().base_type == BASE_TYPE_UNION)) {
         if (lang_.language == IDLOptions::kCSharp) {
           // Union types in C# use generic Table-derived type for better type
           // safety.
@@ -963,13 +966,30 @@ class GeneralGenerator : public BaseGenerator {
             break;
           case BASE_TYPE_VECTOR: {
             auto vectortype = field.value.type.VectorType();
+            if (vectortype.base_type == BASE_TYPE_UNION &&
+                lang_.language == IDLOptions::kCSharp) {
+                  conditional_cast = "(TTable?)";
+                  getter += "<TTable>";
+            }
             code += "(";
             if (vectortype.base_type == BASE_TYPE_STRUCT) {
               if (lang_.language != IDLOptions::kCSharp)
                 code += type_name + " obj, ";
               getter = obj + ".__assign";
+            } else if (vectortype.base_type == BASE_TYPE_UNION) {
+              if (lang_.language != IDLOptions::kCSharp)
+                code += type_name + " obj, ";
             }
-            code += "int j)" + offset_prefix + conditional_cast + getter + "(";
+            code += "int j)";
+            const auto body = offset_prefix + conditional_cast + getter + "(";
+            if (vectortype.base_type == BASE_TYPE_UNION) {
+              if (lang_.language != IDLOptions::kCSharp)
+                code += body + "obj, ";
+              else
+                code += " where TTable : struct, IFlatbufferObject" + body;
+            } else {
+              code += body;
+            }
             auto index = lang_.accessor_prefix + "__vector(o) + j * " +
                          NumToString(InlineSize(vectortype));
             if (vectortype.base_type == BASE_TYPE_STRUCT) {
@@ -999,7 +1019,7 @@ class GeneralGenerator : public BaseGenerator {
               code += "(obj, o) : null";
             }
             break;
-          default: assert(0);
+          default: FLATBUFFERS_ASSERT(0);
         }
       }
       code += member_suffix;
@@ -1427,7 +1447,7 @@ bool GenerateGeneral(const Parser &parser, const std::string &path,
 
 std::string GeneralMakeRule(const Parser &parser, const std::string &path,
                             const std::string &file_name) {
-  assert(parser.opts.lang <= IDLOptions::kMAX);
+  FLATBUFFERS_ASSERT(parser.opts.lang <= IDLOptions::kMAX);
   const auto &lang = GetLangParams(parser.opts.lang);
 
   std::string make_rule;

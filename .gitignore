@@ -45,6 +45,7 @@ grpctest
 grpctest.exe
 snapshot.sh
 tags
+tests/dart_gen
 tests/go_gen
 tests/monsterdata_java_wire.mon
 tests/monsterdata_java_wire_sp.mon
@@ -95,3 +96,10 @@ build.ninja
 rules.ninja
 
 .vs/
+.vscode
+dart/.pub/
+dart/.packages
+dart/pubspec.lock
+dart/.dart_tool/
+dart/build/
+dart/doc/api/

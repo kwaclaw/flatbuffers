@@ -54,7 +54,7 @@ const JsLanguageParameters &GetJsLangParams(IDLOptions::Language lang) {
   if (lang == IDLOptions::kJs) {
     return js_language_parameters[0];
   } else {
-    assert(lang == IDLOptions::kTs);
+    FLATBUFFERS_ASSERT(lang == IDLOptions::kTs);
     return js_language_parameters[1];
   }
 }
@@ -103,7 +103,10 @@ class JsGenerator : public BaseGenerator {
 
     if (lang_.language == IDLOptions::kJs && !exports_code.empty() &&
         !parser_.opts.skip_js_exports) {
-      code += "// Exports for Node.js and RequireJS\n";
+        if( parser_.opts.use_ES6_js_export_format )
+            code += "// Exports for ECMAScript6 Modules\n";
+        else
+            code += "// Exports for Node.js and RequireJS\n";
       code += exports_code;
     }
 
@@ -223,6 +226,8 @@ class JsGenerator : public BaseGenerator {
           code += "var ";
           if (parser_.opts.use_goog_js_export_format) {
             exports += "goog.exportSymbol('" + *it + "', " + *it + ");\n";
+          } else if( parser_.opts.use_ES6_js_export_format){
+            exports += "export {" + *it + "};\n";
           } else {
             exports += "this." + *it + " = " + *it + ";\n";
           }
@@ -293,6 +298,8 @@ class JsGenerator : public BaseGenerator {
         if (parser_.opts.use_goog_js_export_format) {
           exports += "goog.exportSymbol('" + enum_def.name + "', " +
                      enum_def.name + ");\n";
+        } else if (parser_.opts.use_ES6_js_export_format) {
+          exports += "export {" + enum_def.name + "};\n";   
         } else {
           exports += "this." + enum_def.name + " = " + enum_def.name + ";\n";
         }
@@ -561,6 +568,8 @@ class JsGenerator : public BaseGenerator {
         if (parser_.opts.use_goog_js_export_format) {
           exports += "goog.exportSymbol('" + struct_def.name + "', " +
                      struct_def.name + ");\n";
+        } else if (parser_.opts.use_ES6_js_export_format) {
+          exports += "export {" + struct_def.name + "};\n";
         } else {
           exports +=
               "this." + struct_def.name + " = " + struct_def.name + ";\n";
@@ -870,7 +879,7 @@ class JsGenerator : public BaseGenerator {
                     " : null;\n";
             break;
 
-          default: assert(0);
+          default: FLATBUFFERS_ASSERT(0);
         }
       }
       code += "};\n\n";
@@ -1181,7 +1190,7 @@ bool GenerateJS(const Parser &parser, const std::string &path,
 
 std::string JSMakeRule(const Parser &parser, const std::string &path,
                        const std::string &file_name) {
-  assert(parser.opts.lang <= IDLOptions::kMAX);
+  FLATBUFFERS_ASSERT(parser.opts.lang <= IDLOptions::kMAX);
   const auto &lang = GetJsLangParams(parser.opts.lang);
 
   std::string filebase =

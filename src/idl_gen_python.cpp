@@ -141,9 +141,14 @@ static void GetScalarFieldOfTable(const StructDef &struct_def,
   code += MakeCamel(field.name);
   code += "(self):";
   code += OffsetPrefix(field);
-  code += Indent + Indent + Indent + "return " + getter;
-  code += "o + self._tab.Pos)\n";
-  code += Indent + Indent + "return " + field.value.constant + "\n\n";
+  getter += "o + self._tab.Pos)";
+  auto is_bool = field.value.type.base_type == BASE_TYPE_BOOL;
+  if (is_bool) {
+    getter = "bool(" + getter + ")";
+  }
+  code += Indent + Indent + Indent + "return " + getter + "\n";
+  auto defaultValue = (is_bool ? "False" : field.value.constant);
+  code += Indent + Indent + "return " + defaultValue + "\n\n";
 }
 
 // Get a struct by initializing an existing struct.
@@ -194,7 +199,7 @@ static void GetStringField(const StructDef &struct_def, const FieldDef &field,
   code += OffsetPrefix(field);
   code += Indent + Indent + Indent + "return " + GenGetter(field.value.type);
   code += "o + self._tab.Pos)\n";
-  code += Indent + Indent + "return bytes()\n\n";
+  code += Indent + Indent + "return None\n\n";
 }
 
 // Get the value of a union from an object.
@@ -459,7 +464,7 @@ static void GenStructAccessor(const StructDef &struct_def,
         break;
       }
       case BASE_TYPE_UNION: GetUnionField(struct_def, field, code_ptr); break;
-      default: assert(0);
+      default: FLATBUFFERS_ASSERT(0);
     }
   }
   if (field.value.type.base_type == BASE_TYPE_VECTOR) {

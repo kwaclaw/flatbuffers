@@ -91,7 +91,8 @@ std::string GetAnyValueS(reflection::BaseType type, const uint8_t *data,
             auto val = GetAnyFieldS(*table_field, fielddef, schema);
             if (fielddef.type()->base_type() == reflection::String) {
               std::string esc;
-              flatbuffers::EscapeString(val.c_str(), val.length(), &esc, true);
+              flatbuffers::EscapeString(val.c_str(), val.length(), &esc, true,
+                                        false);
               val = esc;
             }
             s += fielddef.name()->str();
@@ -275,7 +276,7 @@ class ResizeContext {
             break;
           }
           case reflection::String: break;
-          default: assert(false);
+          default: FLATBUFFERS_ASSERT(false);
         }
       }
       // Check if the vtable offset points beyond the insertion point.
@@ -478,7 +479,7 @@ Offset<const Table *> CopyTable(FlatBufferBuilder &fbb,
       }
     }
   }
-  assert(offset_idx == offsets.size());
+  FLATBUFFERS_ASSERT(offset_idx == offsets.size());
   if (objectdef.is_struct()) {
     fbb.ClearOffsets();
     return fbb.EndStruct();
@@ -518,11 +519,11 @@ bool VerifyObject(flatbuffers::Verifier &v, const reflection::Schema &schema,
 bool VerifyVector(flatbuffers::Verifier &v, const reflection::Schema &schema,
                   const flatbuffers::Table &table,
                   const reflection::Field &vec_field) {
-  assert(vec_field.type()->base_type() == reflection::Vector);
+  FLATBUFFERS_ASSERT(vec_field.type()->base_type() == reflection::Vector);
   if (!table.VerifyField<uoffset_t>(v, vec_field.offset())) return false;
 
   switch (vec_field.type()->element()) {
-    case reflection::None: assert(false); break;
+    case reflection::None: FLATBUFFERS_ASSERT(false); break;
     case reflection::UType:
       return v.Verify(flatbuffers::GetFieldV<uint8_t>(table, vec_field));
     case reflection::Bool:
@@ -552,7 +553,7 @@ bool VerifyVector(flatbuffers::Verifier &v, const reflection::Schema &schema,
         return false;
       }
     }
-    case reflection::Vector: assert(false); break;
+    case reflection::Vector: FLATBUFFERS_ASSERT(false); break;
     case reflection::Obj: {
       auto obj = schema.objects()->Get(vec_field.type()->index());
       if (obj->is_struct()) {
@@ -575,8 +576,8 @@ bool VerifyVector(flatbuffers::Verifier &v, const reflection::Schema &schema,
       }
       return true;
     }
-    case reflection::Union: assert(false); break;
-    default: assert(false); break;
+    case reflection::Union: FLATBUFFERS_ASSERT(false); break;
+    default: FLATBUFFERS_ASSERT(false); break;
   }
 
   return false;
@@ -597,7 +598,7 @@ bool VerifyObject(flatbuffers::Verifier &v, const reflection::Schema &schema,
   for (uoffset_t i = 0; i < obj.fields()->size(); i++) {
     auto field_def = obj.fields()->Get(i);
     switch (field_def->type()->base_type()) {
-      case reflection::None: assert(false); break;
+      case reflection::None: FLATBUFFERS_ASSERT(false); break;
       case reflection::UType:
         if (!table->VerifyField<uint8_t>(v, field_def->offset())) return false;
         break;
@@ -665,7 +666,7 @@ bool VerifyObject(flatbuffers::Verifier &v, const reflection::Schema &schema,
         }
         break;
       }
-      default: assert(false); break;
+      default: FLATBUFFERS_ASSERT(false); break;
     }
   }
 

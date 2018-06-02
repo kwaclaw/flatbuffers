@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.1;net35</TargetFrameworks>
@@ -12,11 +12,11 @@
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/kwaclaw/flatbuffers</PackageProjectUrl>
     <PackageId>KdSoft.FlatBuffers</PackageId>
-    <PackageVersion>1.9.1</PackageVersion>
+    <PackageVersion>1.9.2</PackageVersion>
     <PackageReleaseNotes>
       .NET/C# code of FlatBuffers 1.9 packaged for Nuget ("net" subdirectory).
       "Unsafe" optimizations have been turned on.
-      Namespace has been changed to Google.FlatBuffers, therefore rquires use of the
+      Namespace has been changed to Google.FlatBuffers, therefore requires use of the
       included flatc.exe generator (see tools directory in package).
     </PackageReleaseNotes>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>

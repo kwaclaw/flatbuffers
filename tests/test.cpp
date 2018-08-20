@@ -273,8 +273,13 @@ void AccessFlatBufferTest(const uint8_t *flatbuf, size_t length,
   TEST_EQ(VectorLength(inventory), 10UL);  // Works even if inventory is null.
   TEST_NOTNULL(inventory);
   unsigned char inv_data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-  for (auto it = inventory->begin(); it != inventory->end(); ++it)
-    TEST_EQ(*it, inv_data[it - inventory->begin()]);
+  // Check compatibilty of iterators with STL.
+  std::vector<unsigned char> inv_vec(inventory->begin(), inventory->end());
+  for (auto it = inventory->begin(); it != inventory->end(); ++it) {
+    auto indx = it - inventory->begin();
+    TEST_EQ(*it, inv_vec.at(indx));  // Use bounds-check.
+    TEST_EQ(*it, inv_data[indx]);
+  }
 
   TEST_EQ(monster->color(), Color_Blue);
 
@@ -1945,6 +1950,46 @@ void EndianSwapTest() {
   TEST_EQ(flatbuffers::EndianSwap(flatbuffers::EndianSwap(3.14f)), 3.14f);
 }
 
+void UninitializedVectorTest() {
+  flatbuffers::FlatBufferBuilder builder;
+
+  Test *buf = nullptr;
+  auto vector_offset = builder.CreateUninitializedVectorOfStructs<Test>(2, &buf);
+  TEST_NOTNULL(buf);
+  buf[0] = Test(10, 20);
+  buf[1] = Test(30, 40);
+
+  auto required_name = builder.CreateString("myMonster");
+  auto monster_builder = MonsterBuilder(builder);
+  monster_builder.add_name(required_name); // required field mandated for monster.
+  monster_builder.add_test4(vector_offset);
+  builder.Finish(monster_builder.Finish());
+
+  auto p = builder.GetBufferPointer();
+  auto uvt = flatbuffers::GetRoot<Monster>(p);
+  TEST_NOTNULL(uvt);
+  auto vec = uvt->test4();
+  TEST_NOTNULL(vec);
+  auto test_0 = vec->Get(0);
+  auto test_1 = vec->Get(1);
+  TEST_EQ(test_0->a(), 10);
+  TEST_EQ(test_0->b(), 20);
+  TEST_EQ(test_1->a(), 30);
+  TEST_EQ(test_1->b(), 40);
+}
+
+// For testing any binaries, e.g. from fuzzing.
+void LoadVerifyBinaryTest() {
+  std::string binary;
+  if (flatbuffers::LoadFile((test_data_path +
+                             "fuzzer/your-filename-here").c_str(),
+                            true, &binary)) {
+    flatbuffers::Verifier verifier(
+          reinterpret_cast<const uint8_t *>(binary.data()), binary.size());
+    TEST_EQ(VerifyMonsterBuffer(verifier), true);
+  }
+}
+
 int main(int /*argc*/, const char * /*argv*/ []) {
   // clang-format off
   #if defined(FLATBUFFERS_MEMORY_LEAK_TRACKING) && \
@@ -1988,6 +2033,7 @@ int main(int /*argc*/, const char * /*argv*/ []) {
     ReflectionTest(flatbuf.data(), flatbuf.size());
     ParseProtoTest();
     UnionVectorTest();
+    LoadVerifyBinaryTest();
   #endif
   // clang-format on
 
@@ -2015,6 +2061,7 @@ int main(int /*argc*/, const char * /*argv*/ []) {
   JsonDefaultTest();
 
   FlexBuffersTest();
+  UninitializedVectorTest();
 
   if (!testing_fails) {
     TEST_OUTPUT_LINE("ALL TESTS PASSED");

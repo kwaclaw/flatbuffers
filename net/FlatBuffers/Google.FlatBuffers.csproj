@@ -12,7 +12,7 @@
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/kwaclaw/flatbuffers</PackageProjectUrl>
     <PackageId>KdSoft.FlatBuffers</PackageId>
-    <PackageVersion>1.9.2</PackageVersion>
+    <PackageVersion>1.9.3</PackageVersion>
     <PackageReleaseNotes>
       .NET/C# code of FlatBuffers 1.9 packaged for Nuget ("net" subdirectory).
       "Unsafe" optimizations have been turned on.

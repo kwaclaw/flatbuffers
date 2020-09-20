@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-include from "../lobster/"
-include "monster_test_generated.lobster"
+import from "../lobster/"
+import monster_test_generated
+import optional_scalars_generated
 
 def check_read_buffer(buf):
     // CheckReadBuffer checks that the given buffer is evaluated correctly as the example Monster.
@@ -70,9 +71,10 @@ def make_monster_from_generated_code():
 
     let inv = b.MyGame_Example_MonsterCreateInventoryVector([ 0, 1, 2, 3, 4 ])
 
-    b.MyGame_Example_MonsterStart()
-    b.MyGame_Example_MonsterAddName(fred)
-    let mon2 = b.MyGame_Example_MonsterEnd()
+    let mon2 = MyGame_Example_MonsterBuilder { b }
+        .start()
+        .add_name(fred)
+        .end()
 
     b.MyGame_Example_MonsterStartTest4Vector(2)
     b.MyGame_Example_CreateTest(10, 20)
@@ -88,22 +90,46 @@ def make_monster_from_generated_code():
     let vector_of_doubles = b.MyGame_Example_MonsterCreateVectorOfDoublesVector(
                                 [ -1.7976931348623157e+308, 0, 1.7976931348623157e+308 ])
 
-    b.MyGame_Example_MonsterStart()
-    b.MyGame_Example_MonsterAddPos(b.MyGame_Example_CreateVec3(1.0, 2.0, 3.0, 3.0, 2, 5, 6))
-    b.MyGame_Example_MonsterAddHp(80)
-    b.MyGame_Example_MonsterAddName(name)
-    b.MyGame_Example_MonsterAddInventory(inv)
-    b.MyGame_Example_MonsterAddTestType(MyGame_Example_Any_Monster)
-    b.MyGame_Example_MonsterAddTest(mon2)
-    b.MyGame_Example_MonsterAddTest4(test4)
-    b.MyGame_Example_MonsterAddTestarrayofstring(test_array_of_string)
-    b.MyGame_Example_MonsterAddVectorOfLongs(vector_of_longs)
-    b.MyGame_Example_MonsterAddVectorOfDoubles(vector_of_doubles)
-    let mon = b.MyGame_Example_MonsterEnd()
+    let mon = MyGame_Example_MonsterBuilder { b }
+        .start()
+        .add_pos(b.MyGame_Example_CreateVec3(1.0, 2.0, 3.0, 3.0,
+                 MyGame_Example_Color_Green, 5, 6))
+        .add_hp(80)
+        .add_name(name)
+        .add_inventory(inv)
+        .add_test_type(MyGame_Example_Any_Monster)
+        .add_test(mon2)
+        .add_test4(test4)
+        .add_testarrayofstring(test_array_of_string)
+        .add_vector_of_longs(vector_of_longs)
+        .add_vector_of_doubles(vector_of_doubles)
+        .end()
 
     b.Finish(mon)
 
     return b.SizedCopy()
+
+def test_optional_scalars():
+    def build(add_fields):
+        let b = flatbuffers_builder {}
+        let ss = optional_scalars_ScalarStuffBuilder { b }.start()
+        if add_fields:
+            ss.add_just_i8(1)
+            ss.add_maybe_i8(1)
+            ss.add_default_i8(1)
+        b.Finish(ss.end())
+        return optional_scalars_GetRootAsScalarStuff(b.SizedCopy())
+
+    var root = build(true)
+    assert root.just_i8() == 1 and root.default_i8() == 1
+    var maybe_val, maybe_present = root.maybe_i8()
+    assert maybe_val == 1 and maybe_present == true
+
+    root = build(false)
+    assert root.just_i8() == 0 and root.default_i8() == 42
+    maybe_val, maybe_present = root.maybe_i8()
+    assert maybe_val == 0 and maybe_present == false
+
 
 // Verify that the canonical flatbuffer file (produced by the C++ implementation)
 // is readable by the generated Lobster code.
@@ -119,16 +145,19 @@ check_read_buffer(fb1)
 write_file("monsterdata_lobster_wire.mon", fb1)
 
 // Test converting the buffer to JSON and parsing the JSON back again.
-schema := read_file("monster_test.fbs")
+let schema = read_file("monster_test.fbs")
 assert schema
-includedirs := [ "include_test" ]
+let includedirs = [ "include_test" ]
 // Convert binary to JSON:
-json, err1 := flatbuffers_binary_to_json(schema, fb1, includedirs)
+let json, err1 = flatbuffers_binary_to_json(schema, fb1, includedirs)
 assert not err1
 // Parse JSON back to binary:
-fb3, err2 := flatbuffers_json_to_binary(schema, json, includedirs)
+let fb3, err2 = flatbuffers_json_to_binary(schema, json, includedirs)
 assert not err2
 // Check the resulting binary again (full roundtrip test):
 check_read_buffer(fb3)
+
+// Additional tests.
+test_optional_scalars()
 
 print "Lobster test succesful!"

@@ -4,7 +4,7 @@
 
 local flatbuffers = require('flatbuffers')
 
--- /// an example documentation comment: monster object
+-- an example documentation comment: "monster object"
 local Monster = {} -- the module
 local Monster_mt = {} -- the class metatable
 
@@ -69,7 +69,7 @@ end
 function Monster_mt:Color()
     local o = self.view:Offset(16)
     if o ~= 0 then
-        return self.view:Get(flatbuffers.N.Int8, o + self.view.pos)
+        return self.view:Get(flatbuffers.N.Uint8, o + self.view.pos)
     end
     return 8
 end
@@ -120,8 +120,8 @@ function Monster_mt:TestarrayofstringLength()
     end
     return 0
 end
--- /// an example documentation comment: this will end up in the generated code
--- /// multiline too
+-- an example documentation comment: this will end up in the generated code
+-- multiline too
 function Monster_mt:Testarrayoftables(j)
     local o = self.view:Offset(26)
     if o ~= 0 then
@@ -477,14 +477,66 @@ function Monster_mt:VectorOfNonOwningReferencesLength()
     end
     return 0
 end
-function Monster.Start(builder) builder:StartObject(43) end
+function Monster_mt:AnyUniqueType()
+    local o = self.view:Offset(90)
+    if o ~= 0 then
+        return self.view:Get(flatbuffers.N.Uint8, o + self.view.pos)
+    end
+    return 0
+end
+function Monster_mt:AnyUnique()
+    local o = self.view:Offset(92)
+    if o ~= 0 then
+        local obj = flatbuffers.view.New(require('flatbuffers.binaryarray').New(0), 0)
+        self.view:Union(obj, o)
+        return obj
+    end
+end
+function Monster_mt:AnyAmbiguousType()
+    local o = self.view:Offset(94)
+    if o ~= 0 then
+        return self.view:Get(flatbuffers.N.Uint8, o + self.view.pos)
+    end
+    return 0
+end
+function Monster_mt:AnyAmbiguous()
+    local o = self.view:Offset(96)
+    if o ~= 0 then
+        local obj = flatbuffers.view.New(require('flatbuffers.binaryarray').New(0), 0)
+        self.view:Union(obj, o)
+        return obj
+    end
+end
+function Monster_mt:VectorOfEnums(j)
+    local o = self.view:Offset(98)
+    if o ~= 0 then
+        local a = self.view:Vector(o)
+        return self.view:Get(flatbuffers.N.Uint8, a + ((j-1) * 1))
+    end
+    return 0
+end
+function Monster_mt:VectorOfEnumsLength()
+    local o = self.view:Offset(98)
+    if o ~= 0 then
+        return self.view:VectorLen(o)
+    end
+    return 0
+end
+function Monster_mt:SignedEnum()
+    local o = self.view:Offset(100)
+    if o ~= 0 then
+        return self.view:Get(flatbuffers.N.Int8, o + self.view.pos)
+    end
+    return -1
+end
+function Monster.Start(builder) builder:StartObject(49) end
 function Monster.AddPos(builder, pos) builder:PrependStructSlot(0, pos, 0) end
 function Monster.AddMana(builder, mana) builder:PrependInt16Slot(1, mana, 150) end
 function Monster.AddHp(builder, hp) builder:PrependInt16Slot(2, hp, 100) end
 function Monster.AddName(builder, name) builder:PrependUOffsetTRelativeSlot(3, name, 0) end
 function Monster.AddInventory(builder, inventory) builder:PrependUOffsetTRelativeSlot(5, inventory, 0) end
 function Monster.StartInventoryVector(builder, numElems) return builder:StartVector(1, numElems, 1) end
-function Monster.AddColor(builder, color) builder:PrependInt8Slot(6, color, 8) end
+function Monster.AddColor(builder, color) builder:PrependUint8Slot(6, color, 8) end
 function Monster.AddTestType(builder, testType) builder:PrependUint8Slot(7, testType, 0) end
 function Monster.AddTest(builder, test) builder:PrependUOffsetTRelativeSlot(8, test, 0) end
 function Monster.AddTest4(builder, test4) builder:PrependUOffsetTRelativeSlot(9, test4, 0) end
@@ -537,6 +589,13 @@ function Monster.StartVectorOfCoOwningReferencesVector(builder, numElems) return
 function Monster.AddNonOwningReference(builder, nonOwningReference) builder:PrependUint64Slot(41, nonOwningReference, 0) end
 function Monster.AddVectorOfNonOwningReferences(builder, vectorOfNonOwningReferences) builder:PrependUOffsetTRelativeSlot(42, vectorOfNonOwningReferences, 0) end
 function Monster.StartVectorOfNonOwningReferencesVector(builder, numElems) return builder:StartVector(8, numElems, 8) end
+function Monster.AddAnyUniqueType(builder, anyUniqueType) builder:PrependUint8Slot(43, anyUniqueType, 0) end
+function Monster.AddAnyUnique(builder, anyUnique) builder:PrependUOffsetTRelativeSlot(44, anyUnique, 0) end
+function Monster.AddAnyAmbiguousType(builder, anyAmbiguousType) builder:PrependUint8Slot(45, anyAmbiguousType, 0) end
+function Monster.AddAnyAmbiguous(builder, anyAmbiguous) builder:PrependUOffsetTRelativeSlot(46, anyAmbiguous, 0) end
+function Monster.AddVectorOfEnums(builder, vectorOfEnums) builder:PrependUOffsetTRelativeSlot(47, vectorOfEnums, 0) end
+function Monster.StartVectorOfEnumsVector(builder, numElems) return builder:StartVector(1, numElems, 1) end
+function Monster.AddSignedEnum(builder, signedEnum) builder:PrependInt8Slot(48, signedEnum, -1) end
 function Monster.End(builder) return builder:EndObject() end
 
 return Monster -- return the module

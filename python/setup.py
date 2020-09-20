@@ -12,9 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import fileinput
 import os
+import re
+import sys
 from datetime import datetime
 from setuptools import setup
+
+
+def _update_version_attr(new_version):
+    for line in fileinput.input('flatbuffers/_version.py', inplace=True):
+        if line.startswith('__version__'):
+            line = re.sub(r'".*"', '"{}"'.format(new_version), line)
+        sys.stdout.write(line)
 
 
 def version():
@@ -23,7 +33,7 @@ def version():
         # Most git tags are prefixed with 'v' (example: v1.2.3) this is
         # never desirable for artifact repositories, so we strip the
         # leading 'v' if it's present.
-        return version[1:] if version.startswith('v') else version
+        version = version[1:] if version.startswith('v') else version
     else:
         # Default version is an ISO8601 compiliant datetime. PyPI doesn't allow
         # the colon ':' character in its versions, and time is required to allow
@@ -39,7 +49,10 @@ def version():
         print("VERSION environment variable not set, using datetime instead: {}"
               .format(version))
 
+    _update_version_attr(version)
+
     return version
+
 
 setup(
     name='flatbuffers',
@@ -47,11 +60,25 @@ setup(
     license='Apache 2.0',
     author='FlatBuffers Contributors',
     author_email='me@rwinslow.com',
-    url='https://github.com/google/flatbuffers',
-    long_description=('Python runtime library for use with the Flatbuffers'
+    url='https://google.github.io/flatbuffers/',
+    long_description=('Python runtime library for use with the '
+                      '`Flatbuffers <https://google.github.io/flatbuffers/>`_ '
                       'serialization format.'),
     packages=['flatbuffers'],
     include_package_data=True,
     requires=[],
     description='The FlatBuffers serialization format for Python',
+    classifiers=[
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache Software License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 3',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ],
+    project_urls={
+        'Documentation': 'https://google.github.io/flatbuffers/',
+        'Source': 'https://github.com/google/flatbuffers',
+    },
 )

@@ -54,6 +54,16 @@ NamespaceA.TableInFirstNS.getRootAsTableInFirstNS = function(bb, obj) {
 };
 
 /**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {NamespaceA.TableInFirstNS=} obj
+ * @returns {NamespaceA.TableInFirstNS}
+ */
+NamespaceA.TableInFirstNS.getSizePrefixedRootAsTableInFirstNS = function(bb, obj) {
+  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+  return (obj || new NamespaceA.TableInFirstNS).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
  * @param {NamespaceA.NamespaceB.TableInNestedNS=} obj
  * @returns {NamespaceA.NamespaceB.TableInNestedNS|null}
  */
@@ -93,6 +103,13 @@ NamespaceA.TableInFirstNS.prototype.fooStruct = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 8);
   return offset ? (obj || new NamespaceA.NamespaceB.StructInNestedNS).__init(this.bb_pos + offset, this.bb) : null;
 };
+
+/**
+ * @returns {string}
+ */
+NamespaceA.TableInFirstNS.getFullyQualifiedName = function() {
+  return 'NamespaceA.TableInFirstNS';
+}
 
 /**
  * @param {flatbuffers.Builder} builder
@@ -170,6 +187,16 @@ NamespaceC.TableInC.getRootAsTableInC = function(bb, obj) {
 };
 
 /**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {NamespaceC.TableInC=} obj
+ * @returns {NamespaceC.TableInC}
+ */
+NamespaceC.TableInC.getSizePrefixedRootAsTableInC = function(bb, obj) {
+  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+  return (obj || new NamespaceC.TableInC).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
  * @param {NamespaceA.TableInFirstNS=} obj
  * @returns {NamespaceA.TableInFirstNS|null}
  */
@@ -186,6 +213,13 @@ NamespaceC.TableInC.prototype.referToA2 = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 6);
   return offset ? (obj || new NamespaceA.SecondTableInA).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
+
+/**
+ * @returns {string}
+ */
+NamespaceC.TableInC.getFullyQualifiedName = function() {
+  return 'NamespaceC.TableInC';
+}
 
 /**
  * @param {flatbuffers.Builder} builder
@@ -255,6 +289,16 @@ NamespaceA.SecondTableInA.getRootAsSecondTableInA = function(bb, obj) {
 };
 
 /**
+ * @param {flatbuffers.ByteBuffer} bb
+ * @param {NamespaceA.SecondTableInA=} obj
+ * @returns {NamespaceA.SecondTableInA}
+ */
+NamespaceA.SecondTableInA.getSizePrefixedRootAsSecondTableInA = function(bb, obj) {
+  bb.setPosition(bb.position() + flatbuffers.SIZE_PREFIX_LENGTH);
+  return (obj || new NamespaceA.SecondTableInA).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
  * @param {NamespaceC.TableInC=} obj
  * @returns {NamespaceC.TableInC|null}
  */
@@ -262,6 +306,13 @@ NamespaceA.SecondTableInA.prototype.referToC = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
   return offset ? (obj || new NamespaceC.TableInC).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
+
+/**
+ * @returns {string}
+ */
+NamespaceA.SecondTableInA.getFullyQualifiedName = function() {
+  return 'NamespaceA.SecondTableInA';
+}
 
 /**
  * @param {flatbuffers.Builder} builder
@@ -286,6 +337,17 @@ NamespaceA.SecondTableInA.endSecondTableInA = function(builder) {
   var offset = builder.endObject();
   return offset;
 };
+
+/**
+ * @param {flatbuffers.Builder} builder
+ * @param {flatbuffers.Offset} referToCOffset
+ * @returns {flatbuffers.Offset}
+ */
+NamespaceA.SecondTableInA.createSecondTableInA = function(builder, referToCOffset) {
+  NamespaceA.SecondTableInA.startSecondTableInA(builder);
+  NamespaceA.SecondTableInA.addReferToC(builder, referToCOffset);
+  return NamespaceA.SecondTableInA.endSecondTableInA(builder);
+}
 
 // Exports for Node.js and RequireJS
 this.NamespaceA = NamespaceA;

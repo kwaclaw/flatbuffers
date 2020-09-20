@@ -2,6 +2,10 @@ echo "************************ Java:"
 
 sh JavaTest.sh
 
+echo "************************ Kotlin:"
+
+sh KotlinTest.sh
+
 echo "************************ Go:"
 
 sh GoTest.sh
@@ -13,7 +17,8 @@ sh PythonTest.sh
 echo "************************ JavaScript:"
 
 sh JavaScriptTest.sh
-sh JavaScriptUnionVectorTest.sh
+# FIXME does not exist:
+# sh JavaScriptUnionVectorTest.sh
 
 echo "************************ TypeScript:"
 
@@ -40,6 +45,10 @@ echo "************************ Dart:"
 
 sh DartTest.sh
 
+echo "************************ Rust:"
+
+sh RustTest.sh
+
 echo "************************ Lobster:"
 
 # TODO: test if available.
@@ -51,4 +60,6 @@ echo "(in a different repo)"
 
 echo "************************ Swift:"
 
-echo "(in a different repo)"
+cd FlatBuffers.Test.Swift
+sh SwiftTest.sh
+cd ..

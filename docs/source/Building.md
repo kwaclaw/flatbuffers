@@ -29,6 +29,19 @@ Building should also produce two sample executables, `flatsamplebinary` and
 *Note that you MUST be in the root of the FlatBuffers distribution when you
 run 'flattests' or `flatsampletext`, or it will fail to load its files.*
 
+## Building with VCPKG
+
+You can download and install flatbuffers using the [vcpkg](https://github.com/Microsoft/vcpkg/) dependency manager:
+
+    git clone https://github.com/Microsoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    ./vcpkg integrate install
+    ./vcpkg install flatbuffers
+
+The flatbuffers port in vcpkg is kept up to date by Microsoft team members and community contributors.
+If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
+
 ## Building for Android
 
 There is a `flatbuffers/android` directory that contains all you need to build
@@ -79,6 +92,14 @@ target_link_libraries(own_project_target PRIVATE flatbuffers)
 ```
 When build your project the `flatbuffers` library will be compiled and linked 
 to a target as part of your project.
+
+#### Override default depth limit of nested objects
+To override [the depth limit of recursion](@ref flatbuffers_guide_use_cpp), 
+add this directive:
+```cmake
+set(FLATBUFFERS_MAX_PARSING_DEPTH 16)
+```
+to `CMakeLists.txt` file before `add_subdirectory(${FLATBUFFERS_SRC_DIR})` line.
 
 #### For Google Play apps
 

@@ -38,11 +38,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Google.FlatBuffers
 #if ENABLE_SPAN_T
 using System.Buffers.Binary;
 #endif
@@ -50,6 +48,8 @@ using System.Buffers.Binary;
 #if ENABLE_SPAN_T && !UNSAFE_BYTEBUFFER
 #error ENABLE_SPAN_T requires UNSAFE_BYTEBUFFER to also be defined
 #endif
+
+namespace Google.FlatBuffers
 
 {
     public abstract class ByteBufferAllocator

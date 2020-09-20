@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.1;net35</TargetFrameworks>
-    <VersionPrefix>1.9.0</VersionPrefix>
+    <TargetFrameworks>netstandard1.1;net35;netstandard2.0</TargetFrameworks>
+    <VersionPrefix>1.12.0</VersionPrefix>
     <Copyright>Copyright (c) 2015 Google Inc</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Authors>Google Inc.</Authors>
     <Product>Google.FlatBuffers</Product>
     <Title>Google.FlatBuffers</Title>
@@ -12,9 +13,9 @@
   <PropertyGroup>
     <PackageProjectUrl>https://github.com/kwaclaw/flatbuffers</PackageProjectUrl>
     <PackageId>KdSoft.FlatBuffers</PackageId>
-    <PackageVersion>1.9.3</PackageVersion>
+    <PackageVersion>1.12.0</PackageVersion>
     <PackageReleaseNotes>
-      .NET/C# code of FlatBuffers 1.9 packaged for Nuget ("net" subdirectory).
+      .NET/C# code of FlatBuffers 1.12 packaged for Nuget ("net" subdirectory).
       "Unsafe" optimizations have been turned on.
       Namespace has been changed to Google.FlatBuffers, therefore requires use of the
       included flatc.exe generator (see tools directory in package).
@@ -26,9 +27,31 @@
     <DefineConstants>UNSAFE_BYTEBUFFER</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <DefineConstants>UNSAFE_BYTEBUFFER;ENABLE_SPAN_T</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <Content Include="nuget-content\flatc.exe" Pack="true" PackagePath="tools" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <PackageReference Include="System.Buffers">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.5.4</Version>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.1'">
+    <PackageReference Include="System.Buffers">
+      <Version>4.5.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.5.4</Version>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
